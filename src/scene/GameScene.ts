@@ -1,7 +1,8 @@
-import { BoxGeometry, HemisphereLight, Mesh, MeshBasicMaterial, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+import { HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
 import GameEntity from "../entities/GameEntity";
 import GameMap from "../map/GameMap";
 import ResourceManger from "../utils/ResourceManager";
+import PlayerTank from "../entities/PlayerTank";
 
 class GameScene {
     private static _instance = new GameScene();
@@ -42,6 +43,9 @@ class GameScene {
 
         const gameMap = new GameMap(new Vector3(0, 0, 0), 15);
         this._gameEntities.push(gameMap);
+
+        const playerTank = new PlayerTank(new Vector3(7, 7, 0));
+        this._gameEntities.push(playerTank);
     }
 
     private resize = () => {
@@ -56,7 +60,7 @@ class GameScene {
     public load = async () => {
 
         await ResourceManger.instance.load();
-        
+
         for (let index = 0; index < this._gameEntities.length; index++) {
             const element = this._gameEntities[index];
             await element.load();
@@ -66,12 +70,6 @@ class GameScene {
         const light = new HemisphereLight(0xffffbb, 0x000020, 1);
         this._scene.add(light);
     }
-    // public load = () => {
-    //     const geometry = new BoxGeometry(1, 1, 1);
-    //     const material = new MeshBasicMaterial({color: 0x00ff00});
-    //     const cube = new Mesh(geometry, material);
-    //     this._scene.add(cube);
-    // }
 
     public render = () => {
         requestAnimationFrame(this.render);

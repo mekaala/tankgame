@@ -1,4 +1,4 @@
-import { Mesh, MeshStandardMaterial, PlaneGeometry, TextureLoader, Vector3 } from "three";
+import { Mesh, MeshStandardMaterial, PlaneGeometry, Vector3 } from "three";
 import GameEntity from "../entities/GameEntity";
 import ResourceManger from "../utils/ResourceManager";
 
@@ -23,9 +23,9 @@ class MapTile extends GameEntity {
 }
 
 class GameMap extends GameEntity {
-    private _size:number;
+    private _size: number;
     private _tiles: MapTile[] = [];
-    constructor(position:Vector3, size:number) {
+    constructor(position:Vector3, size: number) {
         super(position);
         this._size = size;
 
