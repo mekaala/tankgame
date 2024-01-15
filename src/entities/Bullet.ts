@@ -1,6 +1,7 @@
 import { Box3, Material, Mesh, MeshPhongMaterial, Sphere, SphereGeometry, Vector3 } from "three";
 import GameEntity from "./GameEntity";
 import GameScene from "../scene/GameScene";
+import ExplosionEffect from "../effects/ExplosionEffect";
 
 class Bullet extends GameEntity {
     private _angle: number;
@@ -45,6 +46,11 @@ class Bullet extends GameEntity {
 
         if (colliders.length) {
             this._shouldDispose = true;
+
+            const explosion = new ExplosionEffect(this._mesh.position, 1);
+            explosion.load().then(() => {
+                GameScene.instance.addToScene(explosion);
+            })
         }
     };
 
