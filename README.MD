@@ -1,1 +1,3 @@
-Wall texture from Tiziana: https://opengameart.org/content/light-brown-brick-wall-256px
+Special thanks to Code and Jazz for tutorial
+
+This application is to help me use Three.js with TypeScript.

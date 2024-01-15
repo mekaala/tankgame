@@ -104,6 +104,8 @@ class GameScene {
     public render = () => {
         requestAnimationFrame(this.render);
 
+        this.disposedEntities();
+
         const deltaT = this._clock.getDelta();
 
         for (let index = 0; index < this._gameEntities.length; index++) {
@@ -111,6 +113,25 @@ class GameScene {
             element.update(deltaT);
         }
         this._renderer.render(this._scene, this._camera);
+    }
+
+    public addToScene = (entity:GameEntity) => {
+        this._gameEntities.push(entity);
+        this._scene.add(entity.mesh);
+    }
+
+    // remove entities
+    private disposedEntities = () => {
+        const entitiesToBeDisposed = this._gameEntities.filter(
+            (e) => e.shouldDispose
+        );
+        entitiesToBeDisposed.forEach(element => {
+            this._scene.remove(element.mesh);
+            element.dispose();
+        })
+
+        this._gameEntities = [...this._gameEntities.filter((e) => !e.shouldDispose),
+        ];
     }
 }
 

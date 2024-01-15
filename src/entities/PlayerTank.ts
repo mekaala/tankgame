@@ -1,8 +1,8 @@
 import { Box3, Mesh, MeshStandardMaterial, Sphere, Vector3 } from "three";
 import GameEntity from "./GameEntity";
 import ResourceManger from "../utils/ResourceManager";
-import { ComputeNode } from "three/examples/jsm/nodes/Nodes.js";
 import GameScene from "../scene/GameScene";
+import Bullet from "./Bullet";
 
 type KeyboardState = {
     LeftPressed: boolean;
@@ -12,7 +12,6 @@ type KeyboardState = {
 }
 
 class PlayerTank extends GameEntity {
-
     private _rotation: number = 0;
 
     private _keyboardState: KeyboardState = {
@@ -23,7 +22,7 @@ class PlayerTank extends GameEntity {
     }
 
     constructor(position:Vector3){
-        super(position);
+        super(position, "player");
         window.addEventListener("keydown", this.handleKeyDown);
         window.addEventListener("keyup", this.handleKeyUp)
     }
@@ -47,7 +46,7 @@ class PlayerTank extends GameEntity {
         }   
     }
 
-    private handleKeyUp = (e:KeyboardEvent) => {
+    private handleKeyUp = async (e:KeyboardEvent) => {
         switch (e.key) {
             case "ArrowUp":
                 this._keyboardState.UpPressed = false;
@@ -60,10 +59,26 @@ class PlayerTank extends GameEntity {
                 break;
             case "ArrowRight":
                 this._keyboardState.RightPressed = false;
-                break;   
+                break;
+            case " ":
+                await this.shoot();
+                break;
             default:
                 break;
         }
+    }
+
+    private shoot = async () => {
+        const offset = new Vector3(
+            Math.sin(this._rotation) * 0.3,
+            -Math.cos(this._rotation) * 0.3,
+            0
+        );
+        const shootingPosition = this._mesh.position.clone().add(offset);
+
+        const bullet = new Bullet  (shootingPosition, this._rotation);
+        await bullet.load();
+        GameScene.instance.addToScene(bullet);
     }
 
 
@@ -145,7 +160,10 @@ class PlayerTank extends GameEntity {
 
         const colliders = GameScene.instance.gameEntities.filter(
             (e) => 
-                e !== this && e.collider && e.collider!.intersectsSphere(testingSphere)
+                e !== this &&
+                e.entityType !== "bullet" &&
+                e.collider &&
+                e.collider!.intersectsSphere(testingSphere)
         )
 
         if (colliders.length) {
