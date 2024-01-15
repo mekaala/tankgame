@@ -1,8 +1,9 @@
-import { HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
+import { Clock, HemisphereLight, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from "three";
 import GameEntity from "../entities/GameEntity";
 import GameMap from "../map/GameMap";
 import ResourceManger from "../utils/ResourceManager";
 import PlayerTank from "../entities/PlayerTank";
+import Wall from "../map/Wall";
 
 class GameScene {
     private static _instance = new GameScene();
@@ -17,6 +18,18 @@ class GameScene {
     private readonly _scene = new Scene();
 
     private _gameEntities:GameEntity[] = [];
+
+    private _clock: Clock = new Clock()
+
+    private _mapSize = 15;
+
+    public get camera() {
+        return this._camera;
+    }
+
+    public get gameEntities() {
+        return this._gameEntities;
+    }
 
     private constructor() {
         this._width = window.innerWidth;
@@ -41,11 +54,28 @@ class GameScene {
 
         window.addEventListener("resize", this.resize, false);
 
-        const gameMap = new GameMap(new Vector3(0, 0, 0), 15);
+        const gameMap = new GameMap(new Vector3(0, 0, 0), this._mapSize);
         this._gameEntities.push(gameMap);
 
         const playerTank = new PlayerTank(new Vector3(7, 7, 0));
         this._gameEntities.push(playerTank);
+
+        this.createWalls();
+    }
+
+    private createWalls = () => {
+        const edge = this._mapSize - 1;
+        this._gameEntities.push(new Wall(new Vector3(0, 0, 0)));
+        this._gameEntities.push(new Wall(new Vector3(edge, 0, 0)));
+        this._gameEntities.push(new Wall(new Vector3(edge, edge, 0)));
+        this._gameEntities.push(new Wall(new Vector3(0, edge, 0)));
+
+        for (let i = 1; i < edge; i++) {
+            this._gameEntities.push(new Wall(new Vector3(i, 0, 0)));
+            this._gameEntities.push(new Wall(new Vector3(0, i, 0)));
+            this._gameEntities.push(new Wall(new Vector3(edge, i, 0)));
+            this._gameEntities.push(new Wall(new Vector3(i, edge, 0)));
+        }
     }
 
     private resize = () => {
@@ -73,6 +103,13 @@ class GameScene {
 
     public render = () => {
         requestAnimationFrame(this.render);
+
+        const deltaT = this._clock.getDelta();
+
+        for (let index = 0; index < this._gameEntities.length; index++) {
+            const element = this._gameEntities[index];
+            element.update(deltaT);
+        }
         this._renderer.render(this._scene, this._camera);
     }
 }

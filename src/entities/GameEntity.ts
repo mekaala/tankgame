@@ -1,10 +1,15 @@
-import { Mesh, Vector3 } from "three";
+import { Box3, Mesh, Sphere, Vector3 } from "three";
 
 abstract class GameEntity {
     protected _position:Vector3;
     protected _mesh:Mesh = new Mesh();
     public get mesh() {
         return this._mesh;
+    }
+
+    protected _collider?: Box3 | Sphere;
+    public get collider() {
+        return this._collider;
     }
 
     constructor(position:Vector3) {
@@ -17,7 +22,7 @@ abstract class GameEntity {
     }
 
     public load = async () => {};
-    public update = () => {};
+    public update = (_deltaT: number) => {};
 }
 
 export default GameEntity;
