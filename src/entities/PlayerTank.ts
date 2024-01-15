@@ -94,11 +94,13 @@ class PlayerTank extends GameEntity {
             throw "unable to get tank model";
         }
 
-        const tankBodyMesh = tankModel.scene.children.find(
+        const tankSceneData = tankModel.scene.clone();
+
+        const tankBodyMesh = tankSceneData.children.find(
             (m) => m.name === "Body"
         ) as Mesh;
 
-        const tankTurretMesh = tankModel.scene.children.find(
+        const tankTurretMesh = tankSceneData.children.find(
             (m) => m.name === "Turret"
         ) as Mesh;
 
@@ -129,7 +131,7 @@ class PlayerTank extends GameEntity {
         collider.radius *= 0.75;
         this._collider = collider;
 
-    }
+    };
 
     public update = (deltaT: number) => {
         let computedRotation = this._rotation;
